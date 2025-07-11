@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    {% block styles %}
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+    <title>Library</title>
+  </head>
+  <body>
+    <h1>My Library</h1>
+    {% if book_items %}
+    <ul>
+      {% for book_spec in book_items %}
+      <li>{{ book_spec[0] - book_spec[1] - book_spec[2] }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div>
+      <span>
+        Library is empty
+      </span>
+    </div>
+    {% endif %}
+    <a href="{{ url_for('add') }}">Add New Book</a>
+    {{ bootstrap.load_js() }}
+  </body>
+</html>
