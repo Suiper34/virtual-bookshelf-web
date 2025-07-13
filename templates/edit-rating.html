@@ -1,0 +1,28 @@
+{% from 'bootstrap5/form.html' import render_form %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Rating for {{ book.title }}</title>
+    {{ bootstrap.load_css() }}
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>Edit Rating for {{ book.title }}</h1>
+        <p>Current Rating: {{ book.rating }}/10</p>
+
+        <div class="row">
+            <div class="col-md-6">
+                {{ form.csrf_token }}
+                {{ render_form(form) }}
+                <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Cancel</a>
+            </div>
+        </div>
+    </div>
+    {{ bootstrap.load_js() }}
+</body>
+
+</html>
