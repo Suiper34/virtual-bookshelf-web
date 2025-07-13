@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    {% block styles %}
-    {{ bootstrap.load_css() }}
-    {% endblock %}
-    <title>Library</title>
-  </head>
-  <body>
-    <h1>My Library</h1>
-    {% if book_items %}
-    <ul>
-      {% for book_spec in book_items %}
-      <li>{{ book_spec[0] - book_spec[1] - book_spec[2] }}</li>
-      {% endfor %}
-    </ul>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library</title>
+  {{ bootstrap.load_css() }}
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">My Library</h1>
+
+    {% if books %}
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Rating</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for book in books %}
+          <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.rating }}/10</td>
+            <td>
+              <a href="{{ url_for('edit_rating', book_id=book.id) }}" class="btn btn-sm btn-primary">Edit Rating</a>
+              <a href="{{ url_for('delete', book_id=book.id) }}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
-    <div>
-      <span>
-        Library is empty
-      </span>
+    <div class="alert alert-info">
+      <p>Your library is empty. Add some books!</p>
     </div>
     {% endif %}
-    <a href="{{ url_for('add') }}">Add New Book</a>
-    {{ bootstrap.load_js() }}
-  </body>
+
+    <a href="{{ url_for('add') }}" class="btn btn-success">Add New Book</a>
+  </div>
+
+  {{ bootstrap.load_js() }}
+</body>
+
 </html>
