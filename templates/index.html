@@ -24,14 +24,14 @@
           </tr>
         </thead>
         <tbody>
-          {% for book in books %}
+          {% for book in book_items %}
           <tr>
             <td>{{ book.title }}</td>
             <td>{{ book.author }}</td>
             <td>{{ book.rating }}/10</td>
             <td>
               <a href="{{ url_for('edit_rating', book_id=book.id) }}" class="btn btn-sm btn-primary">Edit Rating</a>
-              <a href="{{ url_for('delete', book_id=book.id) }}" class="btn btn-sm btn-danger">Delete</a>
+              <a href="{{ url_for('delete_book', book_id=book.id) }}" class="btn btn-sm btn-danger">Delete</a>
             </td>
           </tr>
           {% endfor %}

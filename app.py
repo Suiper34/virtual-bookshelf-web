@@ -20,8 +20,10 @@ class BookForm(FlaskForm):
 
 
 class EditRating(FlaskForm):
-    rating = FloatField('Edit Rating (out of 10 eg: 9.5/10)',
-                        validators=[DataRequired(), NumberRange(min=0, max=10)])
+    rating = FloatField(
+        'Edit Rating (out of 10 eg: 9.5/10)',
+        validators=[DataRequired(), NumberRange(min=0, max=10)]
+    )
     edit_save = SubmitField('Save Edit')
 
 
@@ -46,7 +48,7 @@ book_items: list = []
 
 
 class Library(db.Model):
-    __tablename__: str = 'books'
+    __tablename__: str = 'bookshelf'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(250), unique=True)
@@ -123,7 +125,7 @@ def edit_rating(book_id: int):
     book_to_update = result.scalar_one_or_none()
 
     if book_to_update is None:
-        flash('Book not found!', 'danger')
+        flash('Book not found!', category='danger')
         return redirect(url_for('home'))
 
     form = EditRating()
@@ -134,11 +136,36 @@ def edit_rating(book_id: int):
             update(Library).where(Library.id == book_id)
         ).values(rating=form.rating.data)
         db.session.commit()
-        flash('Book rating updated successfully!', 'success')
+        flash('Book rating updated successfully!', category='success')
         return redirect(url_for('home'))
 
     form.rating.data = book_to_update.rating
     return render_template('edit-rating.html', form=form, book=book_to_update)
+
+
+@app.route('/delete/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id: int):
+    """
+    Args:
+        book_id (int): primary key of book to delete
+
+    executes DELETE query and shows appropriate flash message
+
+    Returns:
+        redirect to home page
+    """
+
+    book_to_delete = db.session.get(Library, book_id)
+
+    if book_to_delete:
+        db.session.delete(book_to_delete)
+        db.session.commit()
+        flash('Book has been deleted!', category='success')
+
+    else:
+        flash('Book does not exist in the bookshelf!', category='error')
+
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
