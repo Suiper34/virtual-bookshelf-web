@@ -59,7 +59,14 @@ class Library(db.Model):
 
 @app.route('/')
 def home():
+    """
+    Executes a SELECT query for all books ordered by title
+    passes the book list to index.html template
+    shows empty library message if no books exist
 
+    Returns:
+        rendered HTML template showing all books
+    """
     result = db.session.execute(db.select(Library).order_by(Library.title))
     all_books = result.scalars().all
 
@@ -68,6 +75,18 @@ def home():
 
 @app.route('/add', methods=['POST', 'GET'])
 def add():
+    """
+    GET:
+        Displays empty book addition form
+    Returns:
+        rendered add.html template
+
+    POST:
+        validates form data and commits new book to database
+    Returns:
+        redirect to home page after successful submission
+    """
+
     form = BookForm()
 
     if form.validate_on_submit():
@@ -84,6 +103,21 @@ def add():
 
 @app.route('/edit-rating/<int:book_id>', methods=['POST', 'GET'])
 def edit_rating(book_id: int):
+    """
+    Args:
+        book_id (int): primary key of book to edit
+
+    GET:
+        fetches book by ID, pre-populates form with current rating \
+        and renders edit form
+    Returns:
+        rendered edit-rating.html template
+
+    POST:
+        validates new rating and executes UPDATE query
+    Returns:
+        redirect to home page after save
+    """
     result = db.session.execute(
         db.select(Library).where(Library.id == book_id))
     book_to_update = result.scalar_one_or_none()
