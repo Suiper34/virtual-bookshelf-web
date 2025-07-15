@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, NumberRange
 from flask_wtf.csrf import CSRFProtect
 import os
 from flask_bootstrap import Bootstrap5
-from sqlalchemy import String, update
+from sqlalchemy import String, update, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from flask_sqlalchemy import SQLAlchemy
 
@@ -69,7 +69,7 @@ def home():
     Returns:
         rendered HTML template showing all books
     """
-    result = db.session.execute(db.select(Library).order_by(Library.title))
+    result = db.session.execute(select(Library).order_by(Library.title))
     all_books = result.scalars().all
 
     return render_template('index.html', book_items=all_books)
@@ -121,7 +121,7 @@ def edit_rating(book_id: int):
         redirect to home page after save
     """
     result = db.session.execute(
-        db.select(Library).where(Library.id == book_id))
+        select(Library).where(Library.id == book_id))
     book_to_update = result.scalar_one_or_none()
 
     if book_to_update is None:
