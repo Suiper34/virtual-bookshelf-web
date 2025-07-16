@@ -20,6 +20,7 @@
           <div class="card-body">
             {{ form.csrf_token }}
             {{ render_form(
+            form,
             button_map={'add_book': 'primary'},
             extra_classes='needs-validation',
             novalidate=True

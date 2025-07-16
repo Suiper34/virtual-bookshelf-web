@@ -1,21 +1,23 @@
-from flask import Flask, render_template, url_for, redirect, flash
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FloatField
-from wtforms.validators import DataRequired, NumberRange
-from flask_wtf.csrf import CSRFProtect
 import os
+
+from flask import Flask, flash, redirect, render_template, url_for
 from flask_bootstrap import Bootstrap5
-from sqlalchemy import String, update, select
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from flask_wtf.csrf import CSRFProtect
+from sqlalchemy import String, select, update
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from wtforms import FloatField, StringField, SubmitField
+from wtforms.validators import DataRequired, Length, NumberRange
 
 
 class BookForm(FlaskForm):
-    book_name = StringField('Book name', validators=[DataRequired()])
+    book_name = StringField('Book name', validators=[
+                            DataRequired(), Length(max=250)])
     book_author = StringField('Author', validators=[
-                              DataRequired(), NumberRange(min=0, max=10)])
+                              DataRequired(), Length(max=250)])
     rating = FloatField('Rating (out of 10 eg: 9.5/10)',
-                        validators=[DataRequired()])
+                        validators=[DataRequired(), NumberRange(min=0, max=10)])
     add_book = SubmitField('Add Book')
 
 
@@ -70,7 +72,7 @@ def home():
         rendered HTML template showing all books
     """
     result = db.session.execute(select(Library).order_by(Library.title))
-    all_books = result.scalars().all
+    all_books = result.scalars().all()
 
     return render_template('index.html', book_items=all_books)
 
@@ -133,17 +135,17 @@ def edit_rating(book_id: int):
     if form.validate_on_submit():
         # update rating
         db.session.execute(
-            update(Library).where(Library.id == book_id)
-        ).values(rating=form.rating.data)
+            update(Library).where(Library.id == book_id).values(
+                rating=form.rating.data)
+        )
         db.session.commit()
         flash('Book rating updated successfully!', category='success')
         return redirect(url_for('home'))
 
-    form.rating.data = book_to_update.rating
     return render_template('edit-rating.html', form=form, book=book_to_update)
 
 
-@app.route('/delete/<int:book_id>', methods=['DELETE'])
+@app.route('/delete/<int:book_id>')
 def delete_book(book_id: int):
     """
     Args:
